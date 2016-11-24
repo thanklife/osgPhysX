@@ -66,4 +66,14 @@ Intermediate/
 .vs/
 # Ignore cmake building directories
 build.*/
-*.tlog
+# cmake配置生成的文件也不要保存。
+CMakeFiles/
+cmake_install.cmake
+CMakeCache.txt
+install_manifest.txt
+# 因为cmake生成vs项目配置的原因，这里不进行vs项目工程的相关保存
+*.vcxproj*
+*.sln
+
+
+
