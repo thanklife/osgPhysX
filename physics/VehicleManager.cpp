@@ -13,11 +13,11 @@ using namespace physx;
 // Tire model friction for each combination of drivable surface type and tire type
 static PxF32 g_tireFrictionMultipliers[VehicleManager::MAX_NUM_SURFACE_TYPES][VehicleManager::MAX_NUM_TIRE_TYPES] =
 {
-    //WETS    SLICKS    ICE        MUD
-    {1.70f,    1.85f,    1.70f,    1.70f},       //MUD
-    {2.00f,    2.15f,    1.90f,    1.90f},       //TARMAC
-    {0.70f,    0.70f,    1.20f,    0.90f},       //ICE
-    {1.20f,    0.90f,    1.30f,    1.40f}        //GRASS
+	//WETS	SLICKS	ICE		MUD      数据重新从最新PhysX3.3.2版本获取
+	{0.95f,	0.95f,	0.95f,	0.95f},		//MUD
+	{1.10f,	1.15f,	1.10f,	1.10f},		//TARMAC
+	{0.70f,	0.70f,	0.70f,	0.70f},		//ICE
+	{0.80f,	0.80f,	0.80f,	0.80f}		//GRASS
 };
 
 // Scene filter shader
@@ -50,7 +50,8 @@ static PxFilterFlags vehicleSceneFilter(
     {
         return PxFilterFlag::eSUPPRESS;
     }
-    pairFlags = physx::PxPairFlag::eRESOLVE_CONTACTS;  //eCONTACT_DEFAULT;
+	pairFlags = physx::PxPairFlag::eRESOLVE_CONTACTS | PxPairFlag::eNOTIFY_TOUCH_FOUND;  //eCONTACT_DEFAULT;曹经理添加| PxPairFlag::eNOTIFY_TOUCH_FOUND;做碰撞检测
+
     
     // Enable CCD stuff - for now just for everything or nothing
 #if USE_PHYSX_33
@@ -233,7 +234,7 @@ void VehicleManager::initialize()
     PxVehicleSetBasisVectors( PxVec3(0,1,0), PxVec3(0,0,1) );
     for ( int i=0; i<MAX_NUM_SURFACE_TYPES; ++i )
     {
-        _surfaceMaterials[i] = SDK_OBJ->createMaterial( 0.2f, 0.5f, 0.5f );
+        _surfaceMaterials[i] = SDK_OBJ->createMaterial( 0.5f, 0.5f, 0.6f );
         _surfaceTypes[i].mType = (PxU32)SURFACE_MUD + i;
     }
     

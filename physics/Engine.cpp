@@ -43,7 +43,7 @@ Engine::Engine()
         OSG_WARN << "Unable to initialize PhysX SDK." << std::endl;
         return;
     }
-    _defaultMaterial = _physicsSDK->createMaterial( 0.5, 0.5, 0.5 );
+    _defaultMaterial = _physicsSDK->createMaterial( 0.5f, 0.5f, 0.1f );//根据最新sample更新数据
     
     if ( !PxInitExtensions(*_physicsSDK) )
     {

@@ -27,50 +27,50 @@ using namespace physx;
 // The default speed table
 PxF32 g_speedDataTable[2 * 8] =
 {
-    0.0f,       0.75f,
-    5.0f,       0.75f,
-    30.0f,      0.125f,
-    120.0f,     0.1f,
-    PX_MAX_F32, PX_MAX_F32,
-    PX_MAX_F32, PX_MAX_F32,
-    PX_MAX_F32, PX_MAX_F32,
-    PX_MAX_F32, PX_MAX_F32
+	0.0f,		0.75f,
+	5.0f,		0.75f,
+	30.0f,		0.125f,
+	120.0f,		0.1f,
+	PX_MAX_F32, PX_MAX_F32,
+	PX_MAX_F32, PX_MAX_F32,
+	PX_MAX_F32, PX_MAX_F32,
+	PX_MAX_F32, PX_MAX_F32
 };
 
 // The default control smoothing data
 PxVehicleKeySmoothingData g_smoothingData =
 {
     {
-        3.0f,    //rise rate eANALOG_INPUT_ACCEL        
-        3.0f,    //rise rate eANALOG_INPUT_BRAKE        
+        16.0f,    //rise rate eANALOG_INPUT_ACCEL        
+        16.0f,    //rise rate eANALOG_INPUT_BRAKE        
         10.0f,   //rise rate eANALOG_INPUT_HANDBRAKE    
         2.5f,    //rise rate eANALOG_INPUT_STEER_LEFT    
         2.5f,    //rise rate eANALOG_INPUT_STEER_RIGHT    
     },
     {
-        5.0f,    //fall rate eANALOG_INPUT_ACCEL        
+        3.0f,    //fall rate eANALOG_INPUT_ACCEL        
         5.0f,    //fall rate eANALOG_INPUT_BRAKE        
         10.0f,   //fall rate eANALOG_INPUT_HANDBRAKE    
-        5.0f,    //fall rate eANALOG_INPUT_STEER_LEFT    
-        5.0f     //fall rate eANALOG_INPUT_STEER_RIGHT    
+        2.5f,    //fall rate eANALOG_INPUT_STEER_LEFT    
+        2.5f     //fall rate eANALOG_INPUT_STEER_RIGHT    
     }
 };
 
 PxVehiclePadSmoothingData g_smoothingDataPad =
 {
     {
-        6.0f,    //rise rate eANALOG_INPUT_ACCEL        
-        6.0f,    //rise rate eANALOG_INPUT_BRAKE        
-        12.0f,   //rise rate eANALOG_INPUT_HANDBRAKE    
-        2.5f,    //rise rate eANALOG_INPUT_STEER_LEFT    
-        2.5f,    //rise rate eANALOG_INPUT_STEER_RIGHT    
+        PX_MAX_REAL,    //rise rate eANALOG_INPUT_ACCEL        
+        PX_MAX_REAL,    //rise rate eANALOG_INPUT_BRAKE        
+        10.0f,   //rise rate eANALOG_INPUT_HANDBRAKE    
+        PX_MAX_REAL,    //rise rate eANALOG_INPUT_STEER_LEFT    
+        PX_MAX_REAL,    //rise rate eANALOG_INPUT_STEER_RIGHT    
     },
     {
-        10.0f,    //fall rate eANALOG_INPUT_ACCEL        
-        10.0f,    //fall rate eANALOG_INPUT_BRAKE        
-        12.0f,    //fall rate eANALOG_INPUT_HANDBRAKE    
-        5.0f,     //fall rate eANALOG_INPUT_STEER_LEFT    
-        5.0f      //fall rate eANALOG_INPUT_STEER_RIGHT    
+        PX_MAX_REAL,    //fall rate eANALOG_INPUT_ACCEL        
+        PX_MAX_REAL,    //fall rate eANALOG_INPUT_BRAKE        
+        10.0f,    //fall rate eANALOG_INPUT_HANDBRAKE    
+        PX_MAX_REAL,     //fall rate eANALOG_INPUT_STEER_LEFT    
+        PX_MAX_REAL      //fall rate eANALOG_INPUT_STEER_RIGHT    
     }
 };
 
@@ -131,7 +131,7 @@ void WheeledVehicle::WheelData::computeParameters( const ChassisData& chassis, b
     {
         maxHandBrakeTorque = 0.0f;
         maxSteer = PxPi * 0.3333f;
-        tireData.mType = VehicleManager::TIRE_SLICKS;
+        tireData.mType = VehicleManager::TIRE_SLICKS;//轮胎的类型
         suspensionData.mSprungMass = massFront * 0.5f;
     }
     else
@@ -143,10 +143,10 @@ void WheeledVehicle::WheelData::computeParameters( const ChassisData& chassis, b
     }
     
     maxBrakeTorque = 1500.0f;
-    dampingRate = 0.25f;
+    dampingRate = 4.0f;//阻尼率
     toeAngle = 0.0f;
     suspensionData.mMaxCompression = 0.3f;
-    suspensionData.mMaxDroop = 0.1f;
+    suspensionData.mMaxDroop = 0.01f;
     suspensionData.mSpringStrength = 85000.0f;    
     suspensionData.mSpringDamperRate = 4500.0f;
     
@@ -411,6 +411,7 @@ void CarVehicle::handleInputs( double step )
 #if USE_PHYSX_33
         PxVehicleDrive4WSmoothAnalogRawInputsAndSetAnalogInputs(
             g_smoothingDataPad, _speedTable, _controlData, step, inAir(), *drive4W );
+		printf("PxVehicleDrive4WSmoothAnalogRawInputsAndSetAnalogInputs\n\n\n");
 #else
         PxVehicleDrive4WSmoothAnalogRawInputsAndSetAnalogInputs(
             g_smoothingDataPad, _speedTable, _controlData, step, *drive4W );
@@ -760,6 +761,11 @@ void TruckVehicle::setupExtraWheels( physx::PxVehicleWheelsSimData* wheelsSimDat
         suspData.mSprungMass *= 0.6666f;
         suspData.mSpringStrength *= 0.666f;
         suspData.mSpringDamperRate *= 0.666f;
+		//添加没有设置的参数
+		suspData.mMaxCompression = 0.3f;
+		suspData.mMaxDroop=0.1f;
+		suspData.mSpringStrength = 35000.0f;
+		suspData.mSpringDamperRate = 4500.0f;
         wheelsSimData->setSuspensionData( i, suspData );
     }
     
